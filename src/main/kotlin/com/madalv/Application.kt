@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 
-private val client = HttpClient(CIO) {
+ val client = HttpClient(CIO) {
     install(io.ktor.client.plugins.contentnegotiation.ContentNegotiation) {
         json(Json {
             prettyPrint = true
@@ -20,7 +20,7 @@ private val client = HttpClient(CIO) {
         })
     }
 }
-private val logger = KotlinLogging.logger {}
+ val logger = KotlinLogging.logger {}
 
 fun main() {
     embeddedServer(Netty, port = 8082, host = "0.0.0.0") {
