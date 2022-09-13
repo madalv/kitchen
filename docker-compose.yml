@@ -1,0 +1,13 @@
+services:
+  kitchen-server:
+    image: kitchen-img
+    hostname: kitchen
+    build:
+      context: .
+    ports:
+      - "8082:8082"
+    networks:
+      - restaurant
+networks:
+  restaurant:
+    name: restaurant
