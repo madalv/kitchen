@@ -1,11 +1,9 @@
 
 FROM openjdk:18-slim
-#FROM gradle:7-jdk18-alpine AS build
+
 WORKDIR /src
 COPY . /src
-
-#RUN gradle buildFatJar
-
+# RUN bash gradlew buildFatJar
 
 EXPOSE 8082:8082
 RUN mkdir /app
