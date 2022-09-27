@@ -61,10 +61,30 @@ class Cook(
     private suspend fun cookOrderItem(item: OrderItem) {
         item.cookId = id
         val time: Long = menu[item.foodId - 1].preparationTime * Cfg.timeUnit
-        logger.debug { "COOK $id is cooking ITEM ${item.foodId} from ORDER ${item.orderId} TIME $time, CMLPX: ${menu[item.foodId - 1].complexity}" }
-        delay(time)
-        logger.debug { "COOK $id finished ITEM ${item.foodId} from ORDER ${item.orderId}" }
-        distribChannel.send(item)
+        logger.debug { "COOK $id got ITEM ${item.foodId} from ORDER ${item.orderId} TIME $time, CMLPX: ${menu[item.foodId - 1].complexity}, A: ${menu[item.foodId - 1].cookingApparatus}" }
+
+        when (menu[item.foodId - 1].cookingApparatus) {
+            "stove" -> {
+                stoveChannel.send(item)
+                logger.debug { "COOK $id going to stove... ITEM ${item.foodId} from ORDER ${item.orderId} TIME $time, CMLPX: ${menu[item.foodId - 1].complexity}" }
+            }
+
+            "oven" -> {
+                ovenChannel.send(item)
+                logger.debug { "COOK $id going to oven... ITEM ${item.foodId} from ORDER ${item.orderId} TIME $time, CMLPX: ${menu[item.foodId - 1].complexity}" }
+            }
+
+            null -> {
+                //logger.debug { "COOK $id is cooking ITEM ${item.foodId} from ORDER ${item.orderId} TIME $time, CMLPX: ${menu[item.foodId - 1].complexity}" }
+                delay(time)
+                logger.debug { "COOK $id finished ITEM ${item.foodId} from ORDER ${item.orderId}" }
+                distribChannel.send(item)
+            }
+        }
+
+//        delay(time)
+//        logger.debug { "COOK $id finished ITEM ${item.foodId} from ORDER ${item.orderId}" }
+//        distribChannel.send(item)
     }
 
 }

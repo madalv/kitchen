@@ -1,5 +1,7 @@
 package com.madalv
 
+import com.madalv.Cfg.nrOvens
+import com.madalv.Cfg.nrStoves
 import com.madalv.plugins.configureRouting
 import io.ktor.client.request.*
 import io.ktor.http.*
@@ -16,7 +18,7 @@ import java.util.*
 
 
 // TODO cooking apparatuses
-//  ------ TODO better priority formula
+//  ------ TODO better priority formula ???
 // TODO write serializer for OrderKitchen
 
 suspend fun processQueue() {
@@ -87,15 +89,21 @@ fun main() {
             })
         }
 
+        for (i in 0 until nrStoves) {
+            val app = Apparatus("stove", i, stoveChannel)
+            launch { app.receiveItem() }
+        }
+
+        for (i in 0 until nrOvens) {
+            val app = Apparatus("oven", i, ovenChannel)
+            launch { app.receiveItem() }
+        }
+
 
         cooks.forEachIndexed { index, cook ->
             cook.initialize(index, channelList, distribChannel)
-
             repeat(cook.proficiency) {
-                launch {
-                    CoroutineName("Cook${cook.id}")
-                    cook.work()
-                }
+                launch { cook.work() }
             }
         }
 
