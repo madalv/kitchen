@@ -18,7 +18,7 @@ object Cfg {
     val host = "localhost"
     val nrOvens = 3
     val nrStoves = 2
-    val sharingUnit: Long = timeUnit * 10
+    val sharingUnit: Long = timeUnit
 }
 
 val client = HttpClient(CIO) {
@@ -44,5 +44,5 @@ val complexity2Channel = Channel<OrderItem>()
 val complexity3Channel = Channel<OrderItem>()
 val channelList = listOf(complexity1Channel, complexity2Channel, complexity3Channel)
 val distribChannel = Channel<OrderItem>(10)
-val ovenChannel = Channel<OrderItem>(Channel.UNLIMITED)
-val stoveChannel = Channel<OrderItem>(Channel.UNLIMITED)
+val ovenChannel = Channel<OrderItem>(5)
+val stoveChannel = Channel<OrderItem>(5)

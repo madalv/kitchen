@@ -89,11 +89,13 @@ fun main() {
         for (i in 0 until Cfg.nrStoves) {
             val app = Apparatus("stove", i, stoveChannel)
             launch(apparatusCtx) { app.receiveItem() }
+            launch(apparatusCtx) { app.cookItems() }
         }
 
         for (i in 0 until Cfg.nrOvens) {
             val app = Apparatus("oven", i, ovenChannel)
             launch(apparatusCtx) { app.receiveItem() }
+            launch(apparatusCtx) { app.cookItems() }
         }
 
 
@@ -111,6 +113,7 @@ fun main() {
         launch {
             receiveItems()
         }
+
 
     }.start(wait = true)
 }
