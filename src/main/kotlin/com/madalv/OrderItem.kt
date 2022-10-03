@@ -11,6 +11,13 @@ data class OrderItem(
     @SerialName("food_id") val foodId: Int,
     @Transient val orderId: Int = -5
 ) {
+    @Transient
+    var timePasssed: Long = 0
+
     @SerialName("cook_id")
-    var cookId by Delegates.notNull<Int>()
+    var cookId = 0
+
+    override fun toString(): String {
+        return "$foodId $orderId"
+    }
 }

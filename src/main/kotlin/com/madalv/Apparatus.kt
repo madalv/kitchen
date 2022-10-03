@@ -16,11 +16,21 @@ class Apparatus(
         }
     }
 
+
     private suspend fun cookItem(item: OrderItem) {
-        val time: Long = menu[item.foodId - 1].preparationTime * Cfg.timeUnit
-        logger.debug { "COOK ${item.cookId} is using the $name for ITEM ${item.foodId} from ORDER ${item.orderId} TIME $time, CMLPX: ${menu[item.foodId - 1].complexity}!" }
-        delay(time)
-        logger.debug { "$name $id: ITEM ${item.foodId} from ORDER ${item.orderId} is done, COOK ${item.cookId}!" }
-        distribChannel.send(item)
+        val cookingTime = menu[item.foodId - 1].preparationTime * Cfg.timeUnit
+
+        if (item.timePasssed < cookingTime) {
+            delay(Cfg.sharingUnit)
+            item.timePasssed += Cfg.sharingUnit
+            //logger.debug("$name $id>> ITEM ${item.foodId} from ORDER ${item.orderId} COOK ${item.cookId} ${item.timePasssed} / ${cookingTime}, SWITCHING!!!")
+            when (menu[item.foodId - 1].complexity) {
+                1 -> complexity1Channel.send(item)
+                2 -> complexity2Channel.send(item)
+                3 -> complexity3Channel.send(item)
+            }
+        } else {
+            distribChannel.send(item)
+        }
     }
 }

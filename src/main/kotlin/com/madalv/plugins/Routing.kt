@@ -21,8 +21,19 @@ fun Application.configureRouting() {
                 for (itemId in order.items) {
                     orderItems.add(OrderItem(itemId, order.id))
                 }
-                logger.debug { "--- OrderKitchen ${order.id} received and added to queue! ---" }
-                queue.add(DetailedOrder(order, orderItems))
+                println("--- OrderKitchen ${order.id} received and added to queue! ---")
+                queue.add(
+                    DetailedOrder(
+                        order.id,
+                        order.tableId,
+                        order.items,
+                        order.priority,
+                        order.pickupTime,
+                        order.maxWait,
+                        order.waiterId,
+                        orderItems
+                    )
+                )
             }
         }
     }
