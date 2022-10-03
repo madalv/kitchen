@@ -14,10 +14,11 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.PriorityBlockingQueue
 
 object Cfg {
-    const val timeUnit = 100
-    const val host = "localhost"
-    const val nrOvens = 2
-    const val nrStoves = 1
+    val timeUnit: Long = 100
+    val host = "localhost"
+    val nrOvens = 3
+    val nrStoves = 2
+    val sharingUnit: Long = timeUnit * 10
 }
 
 val client = HttpClient(CIO) {
@@ -35,12 +36,12 @@ val menuJson: String =
     File("src/main/kotlin/com/madalv/config/menu.json").inputStream().readBytes().toString(Charsets.UTF_8)
 val cooks = Json.decodeFromString(ListSerializer(Cook.serializer()), cooksJson)
 val menu = Json { coerceInputValues = true }.decodeFromString(ListSerializer(Food.serializer()), menuJson)
-val compareByPriority = compareByDescending<DetailedOrder> { it.order.priority }
+val compareByPriority = compareByDescending<DetailedOrder> { it.priority }
 var queue: BlockingQueue<DetailedOrder> = PriorityBlockingQueue(100, compareByPriority)
 var unfinishedOrders = ConcurrentHashMap<Int, Pair<Int, DetailedOrder>>()
-val complexity1Channel = Channel<OrderItem>(1)
-val complexity2Channel = Channel<OrderItem>(1)
-val complexity3Channel = Channel<OrderItem>(1)
+val complexity1Channel = Channel<OrderItem>()
+val complexity2Channel = Channel<OrderItem>()
+val complexity3Channel = Channel<OrderItem>()
 val channelList = listOf(complexity1Channel, complexity2Channel, complexity3Channel)
 val distribChannel = Channel<OrderItem>(10)
 val ovenChannel = Channel<OrderItem>(Channel.UNLIMITED)

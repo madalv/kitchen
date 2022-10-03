@@ -12,5 +12,5 @@ data class OrderItem(
     @Transient val orderId: Int = -5
 ) {
     @SerialName("cook_id")
-    var cookId by Delegates.notNull<Int>()
+    var cookId = 0
 }

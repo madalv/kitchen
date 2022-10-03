@@ -66,12 +66,12 @@ class Cook(
         when (menu[item.foodId - 1].cookingApparatus) {
             "stove" -> {
                 stoveChannel.send(item)
-                logger.debug { "COOK $id going to stove... ITEM ${item.foodId} from ORDER ${item.orderId} TIME $time, CMLPX: ${menu[item.foodId - 1].complexity}" }
+                logger.debug { "COOK $id in line for stove... ITEM ${item.foodId} from ORDER ${item.orderId} TIME $time, CMLPX: ${menu[item.foodId - 1].complexity}" }
             }
 
             "oven" -> {
                 ovenChannel.send(item)
-                logger.debug { "COOK $id going to oven... ITEM ${item.foodId} from ORDER ${item.orderId} TIME $time, CMLPX: ${menu[item.foodId - 1].complexity}" }
+                logger.debug { "COOK $id in line for oven... ITEM ${item.foodId} from ORDER ${item.orderId} TIME $time, CMLPX: ${menu[item.foodId - 1].complexity}" }
             }
 
             null -> {
