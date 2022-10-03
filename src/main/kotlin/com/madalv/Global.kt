@@ -16,8 +16,8 @@ import java.util.concurrent.PriorityBlockingQueue
 object Cfg {
     val timeUnit: Long = 100
     val host = "localhost"
-    val nrOvens = 3
-    val nrStoves = 2
+    val nrOvens = 2
+    val nrStoves = 1
     val sharingUnit: Long = timeUnit
 }
 
@@ -37,12 +37,12 @@ val menuJson: String =
 val cooks = Json.decodeFromString(ListSerializer(Cook.serializer()), cooksJson)
 val menu = Json { coerceInputValues = true }.decodeFromString(ListSerializer(Food.serializer()), menuJson)
 val compareByPriority = compareByDescending<DetailedOrder> { it.priority }
-var queue: BlockingQueue<DetailedOrder> = PriorityBlockingQueue(100, compareByPriority)
+var queue: BlockingQueue<DetailedOrder> = PriorityBlockingQueue(10, compareByPriority)
 var unfinishedOrders = ConcurrentHashMap<Int, Pair<Int, DetailedOrder>>()
 val complexity1Channel = Channel<OrderItem>()
 val complexity2Channel = Channel<OrderItem>()
 val complexity3Channel = Channel<OrderItem>()
 val channelList = listOf(complexity1Channel, complexity2Channel, complexity3Channel)
-val distribChannel = Channel<OrderItem>(10)
-val ovenChannel = Channel<OrderItem>(5)
-val stoveChannel = Channel<OrderItem>(5)
+val distribChannel = Channel<OrderItem>()
+val ovenChannel = Channel<OrderItem>(Channel.UNLIMITED)
+val stoveChannel = Channel<OrderItem>(Channel.UNLIMITED)

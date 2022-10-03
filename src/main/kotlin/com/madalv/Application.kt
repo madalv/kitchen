@@ -22,7 +22,7 @@ import java.util.concurrent.BlockingQueue
 
 suspend fun processQueue() {
     while (true) {
-        if (queue.isEmpty()) continue
+        if (queue.isEmpty() || queue.size < 7) continue
         logger.debug(showQueue(queue))
         val orderKitchen = queue.remove()
         orderKitchen.orderProcessTime = System.currentTimeMillis()
@@ -89,13 +89,11 @@ fun main() {
         for (i in 0 until Cfg.nrStoves) {
             val app = Apparatus("stove", i, stoveChannel)
             launch(apparatusCtx) { app.receiveItem() }
-            launch(apparatusCtx) { app.cookItems() }
         }
 
         for (i in 0 until Cfg.nrOvens) {
             val app = Apparatus("oven", i, ovenChannel)
             launch(apparatusCtx) { app.receiveItem() }
-            launch(apparatusCtx) { app.cookItems() }
         }
 
 
@@ -113,7 +111,6 @@ fun main() {
         launch {
             receiveItems()
         }
-
 
     }.start(wait = true)
 }
