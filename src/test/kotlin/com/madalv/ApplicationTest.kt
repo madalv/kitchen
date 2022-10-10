@@ -10,6 +10,7 @@ import io.ktor.client.statement.*
 import kotlin.test.*
 import io.ktor.server.testing.*
 import com.madalv.plugins.*
+import io.ktor.client.call.body
 
 class ApplicationTest {
     @Test

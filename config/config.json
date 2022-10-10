@@ -1,0 +1,6 @@
+{
+  "timeunit": 100,
+  "host": "dhall",
+  "nr_ovens": 2,
+  "nr_stoves": 1
+}
