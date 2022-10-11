@@ -45,10 +45,11 @@ suspend fun receiveItems() {
         val pair = unfinishedOrders.getValue(item.orderId)
         logger.debug("Order ${pair.second.id} ${pair.first} / ${pair.second.orderItems.size}")
         if (pair.first == pair.second.orderItems.size) {
+            pair.second.cookingTime = System.currentTimeMillis() - pair.second.orderProcessTime
             sendOrder(pair.second)
             logger.debug(
                 "Order ${pair.second.id} DONE AND SENT TO DINING HALL! Cooking time " +
-                        "${System.currentTimeMillis() - pair.second.orderProcessTime}"
+                        "${pair.second.cookingTime}"
             )
 
         }
@@ -63,7 +64,8 @@ fun showQueue(q: Queue<DetailedOrder>): String {
 
 suspend fun sendOrder(order: DetailedOrder) {
     logger.debug(Json.encodeToJsonElement(order).toString())
-    client.post("http://${cfg.host}:8081/distribution") {
+    println(cfg.dhall)
+    client.post("http://${cfg.dhall}/distribution") {
         contentType(ContentType.Application.Json)
         setBody(Json.encodeToJsonElement(order))
     }
@@ -71,7 +73,7 @@ suspend fun sendOrder(order: DetailedOrder) {
 
 @OptIn(DelicateCoroutinesApi::class)
 fun main() {
-    embeddedServer(Netty, port = 8082, host = "0.0.0.0") {
+    embeddedServer(Netty, port = cfg.port, host = "0.0.0.0") {
         configureRouting()
         install(ContentNegotiation) {
             json(Json {
@@ -80,7 +82,7 @@ fun main() {
             })
         }
 
-        println(cfg.sharingUnit)
+        println(menu)
         val apparatusCtx = newSingleThreadContext("ApparatusThread")
 
         for (i in 0 until cfg.nrStoves) {

@@ -1,0 +1,7 @@
+{
+  "timeunit": 100,
+  "nr_ovens": 2,
+  "nr_stoves": 1,
+  "dhall": "dhall1:8081",
+  "port": 8082
+}

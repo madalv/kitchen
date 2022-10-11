@@ -17,7 +17,7 @@ data class DetailedOrder(
     @SerialName("cooking_details") var orderItems: MutableList<OrderItem>
 ) {
     @SerialName("cooking_time")
-    val cookingTime by Delegates.notNull<Double>()
+    var cookingTime: Long = 0
 
     @Transient
     var orderProcessTime: Long = 0
