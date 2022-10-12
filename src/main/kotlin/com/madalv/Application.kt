@@ -1,7 +1,5 @@
 package com.madalv
 
-import com.madalv.Cfg.nrOvens
-import com.madalv.Cfg.nrStoves
 import com.madalv.plugins.configureRouting
 import io.ktor.client.request.*
 import io.ktor.http.*
@@ -10,19 +8,17 @@ import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.server.plugins.contentnegotiation.*
-import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.encodeToJsonElement
 import java.util.*
-import java.util.concurrent.BlockingQueue
 
 
 suspend fun processQueue() {
     while (true) {
-        if (queue.isEmpty() || queue.size < 7) continue
+        if (queue.isEmpty() || queue.size < 9) continue
         logger.debug(showQueue(queue))
         val orderKitchen = queue.remove()
         orderKitchen.orderProcessTime = System.currentTimeMillis()
@@ -49,10 +45,11 @@ suspend fun receiveItems() {
         val pair = unfinishedOrders.getValue(item.orderId)
         logger.debug("Order ${pair.second.id} ${pair.first} / ${pair.second.orderItems.size}")
         if (pair.first == pair.second.orderItems.size) {
+            pair.second.cookingTime = System.currentTimeMillis() - pair.second.orderProcessTime
             sendOrder(pair.second)
             logger.debug(
                 "Order ${pair.second.id} DONE AND SENT TO DINING HALL! Cooking time " +
-                        "${System.currentTimeMillis() - pair.second.orderProcessTime}"
+                        "${pair.second.cookingTime}"
             )
 
         }
@@ -60,14 +57,15 @@ suspend fun receiveItems() {
 }
 
 fun showQueue(q: Queue<DetailedOrder>): String {
-    var result = "QUEUE ORDERS: "
+    var result = "QUEUE (${q.size}) ORDERS: "
     for (o in q) result += "ID ${o.id} - P ${o.priority} - NRITEMS ${o.orderItems.size}: ${o.items} | "
     return result
 }
 
 suspend fun sendOrder(order: DetailedOrder) {
     logger.debug(Json.encodeToJsonElement(order).toString())
-    client.post("http://localhost:8081/distribution") {
+    println(cfg.dhall)
+    client.post("http://${cfg.dhall}/distribution") {
         contentType(ContentType.Application.Json)
         setBody(Json.encodeToJsonElement(order))
     }
@@ -75,7 +73,7 @@ suspend fun sendOrder(order: DetailedOrder) {
 
 @OptIn(DelicateCoroutinesApi::class)
 fun main() {
-    embeddedServer(Netty, port = 8082, host = "0.0.0.0") {
+    embeddedServer(Netty, port = cfg.port, host = "0.0.0.0") {
         configureRouting()
         install(ContentNegotiation) {
             json(Json {
@@ -84,14 +82,15 @@ fun main() {
             })
         }
 
+        println(menu)
         val apparatusCtx = newSingleThreadContext("ApparatusThread")
 
-        for (i in 0 until Cfg.nrStoves) {
+        for (i in 0 until cfg.nrStoves) {
             val app = Apparatus("stove", i, stoveChannel)
             launch(apparatusCtx) { app.receiveItem() }
         }
 
-        for (i in 0 until Cfg.nrOvens) {
+        for (i in 0 until cfg.nrOvens) {
             val app = Apparatus("oven", i, ovenChannel)
             launch(apparatusCtx) { app.receiveItem() }
         }

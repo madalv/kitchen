@@ -1,11 +1,26 @@
 services:
-  kitchen-server:
+  kitchen1:
     image: kitchen-img
-    hostname: kitchen
+    hostname: kitchen1
     build:
       context: .
+      dockerfile: Dockerfile
+    volumes:
+      - "/home/madalv/Univer/pr/pr1/kitchen/config1:/app/config"
     ports:
       - "8082:8082"
+    networks:
+      - restaurant
+  kitchen2:
+    image: kitchen-img
+    hostname: kitchen2
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - "/home/madalv/Univer/pr/pr1/kitchen/config2:/app/config"
+    ports:
+      - "8084:8084"
     networks:
       - restaurant
 networks:

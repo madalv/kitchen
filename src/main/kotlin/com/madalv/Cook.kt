@@ -60,7 +60,7 @@ class Cook(
 
     private suspend fun cookOrderItem(item: OrderItem) {
         item.cookId = id
-        val time: Long = menu[item.foodId - 1].preparationTime * Cfg.timeUnit
+        val time: Long = menu[item.foodId - 1].preparationTime * cfg.timeUnit
         //logger.debug { "COOK $id got ITEM ${item.foodId} from ORDER ${item.orderId} TIME $time, CMLPX: ${menu[item.foodId - 1].complexity}, A: ${menu[item.foodId - 1].cookingApparatus}" }
 
         when (menu[item.foodId - 1].cookingApparatus) {
@@ -75,10 +75,23 @@ class Cook(
             }
 
             null -> {
+
+                if (item.timePasssed < time) {
+                    delay(cfg.sharingUnit)
+                    item.timePasssed += cfg.sharingUnit
+                    //logger.debug("$name $id>> ITEM ${item.foodId} from ORDER ${item.orderId} COOK ${item.cookId} ${item.timePasssed} / ${cookingTime}, SWITCHING!!!")
+                    when (menu[item.foodId - 1].complexity) {
+                        1 -> complexity1Channel.send(item)
+                        2 -> complexity2Channel.send(item)
+                        3 -> complexity3Channel.send(item)
+                    }
+                } else {
+                    com.madalv.distribChannel.send(item)
+                }
                 //logger.debug { "COOK $id is cooking ITEM ${item.foodId} from ORDER ${item.orderId} TIME $time, CMLPX: ${menu[item.foodId - 1].complexity}" }
-                delay(time)
-                logger.debug { "COOK $id finished ITEM ${item.foodId} from ORDER ${item.orderId}" }
-                distribChannel.send(item)
+//                delay(time)
+//                logger.debug { "COOK $id finished ITEM ${item.foodId} from ORDER ${item.orderId}" }
+//                distribChannel.send(item)
             }
         }
 

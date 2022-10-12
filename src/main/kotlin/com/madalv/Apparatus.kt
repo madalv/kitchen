@@ -18,11 +18,16 @@ class Apparatus(
 
 
     private suspend fun cookItem(item: OrderItem) {
-        val cookingTime = menu[item.foodId - 1].preparationTime * Cfg.timeUnit
+        val cookingTime = menu[item.foodId - 1].preparationTime * cfg.timeUnit
+
+//        if (cookingTime <= 20 * cfg.timeUnit) {
+//            delay(cookingTime)
+//            distribChannel.send(item)
+//        } else
 
         if (item.timePasssed < cookingTime) {
-            delay(Cfg.sharingUnit)
-            item.timePasssed += Cfg.sharingUnit
+            delay(cfg.sharingUnit)
+            item.timePasssed += cfg.sharingUnit
             //logger.debug("$name $id>> ITEM ${item.foodId} from ORDER ${item.orderId} COOK ${item.cookId} ${item.timePasssed} / ${cookingTime}, SWITCHING!!!")
             when (menu[item.foodId - 1].complexity) {
                 1 -> complexity1Channel.send(item)

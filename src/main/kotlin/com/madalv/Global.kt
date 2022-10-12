@@ -13,13 +13,11 @@ import java.util.concurrent.BlockingQueue
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.PriorityBlockingQueue
 
-object Cfg {
-    val timeUnit: Long = 100
-    val host = "localhost"
-    val nrOvens = 2
-    val nrStoves = 1
-    val sharingUnit: Long = timeUnit
-}
+val configJson: String =
+    File("config/config.json").inputStream().readBytes().toString(Charsets.UTF_8)
+
+
+val cfg: Config = Json.decodeFromString(Config.serializer(), configJson)
 
 val client = HttpClient(CIO) {
     install(ContentNegotiation) {
@@ -31,9 +29,9 @@ val client = HttpClient(CIO) {
 }
 val logger = KotlinLogging.logger {}
 val cooksJson: String =
-    File("src/main/kotlin/com/madalv/config/cooks.json").inputStream().readBytes().toString(Charsets.UTF_8)
+    File("config/cooks.json").inputStream().readBytes().toString(Charsets.UTF_8)
 val menuJson: String =
-    File("src/main/kotlin/com/madalv/config/menu.json").inputStream().readBytes().toString(Charsets.UTF_8)
+    File("config/menu.json").inputStream().readBytes().toString(Charsets.UTF_8)
 val cooks = Json.decodeFromString(ListSerializer(Cook.serializer()), cooksJson)
 val menu = Json { coerceInputValues = true }.decodeFromString(ListSerializer(Food.serializer()), menuJson)
 val compareByPriority = compareByDescending<DetailedOrder> { it.priority }
