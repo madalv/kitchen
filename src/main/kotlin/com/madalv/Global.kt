@@ -35,7 +35,7 @@ val menuJson: String =
 val cooks = Json.decodeFromString(ListSerializer(Cook.serializer()), cooksJson)
 val menu = Json { coerceInputValues = true }.decodeFromString(ListSerializer(Food.serializer()), menuJson)
 val compareByPriority = compareByDescending<DetailedOrder> { it.priority }
-var queue: BlockingQueue<DetailedOrder> = PriorityBlockingQueue(10, compareByPriority)
+var queue: BlockingQueue<DetailedOrder> = PriorityBlockingQueue(50, compareByPriority)
 var unfinishedOrders = ConcurrentHashMap<Int, Pair<Int, DetailedOrder>>()
 val complexity1Channel = Channel<OrderItem>()
 val complexity2Channel = Channel<OrderItem>()

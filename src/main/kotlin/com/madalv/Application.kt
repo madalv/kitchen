@@ -18,7 +18,7 @@ import java.util.*
 
 suspend fun processQueue() {
     while (true) {
-        if (queue.isEmpty() || queue.size < 9) continue
+        if (queue.isEmpty() || queue.size < cfg.queueLimit) continue
         logger.debug(showQueue(queue))
         val orderKitchen = queue.remove()
         orderKitchen.orderProcessTime = System.currentTimeMillis()
