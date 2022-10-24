@@ -12,7 +12,8 @@ class Config(
     @SerialName("nr_stoves")
     val nrStoves: Int,
     val dhall: String,
-    val port: Int
+    val port: Int,
+    @SerialName("queue_limit") val queueLimit: Int
 ) {
     val sharingUnit: Long = timeUnit / 2
 }
