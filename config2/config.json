@@ -1,7 +1,7 @@
 {
   "timeunit": 100,
   "nr_ovens": 2,
-  "nr_stoves": 2,
+  "nr_stoves": 1,
   "dhall": "dhall2:8083",
   "port": 8084,
   "queue_limit": 6
