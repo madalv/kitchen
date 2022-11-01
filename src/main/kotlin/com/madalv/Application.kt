@@ -41,17 +41,21 @@ suspend fun processQueue() {
 
 suspend fun receiveItems() {
     for (item in distribChannel) {
-        unfinishedOrders.computeIfPresent(item.orderId) { _, pair -> Pair(pair.first + 1, pair.second) }
-        val pair = unfinishedOrders.getValue(item.orderId)
-        logger.debug("Order ${pair.second.id} ${pair.first} / ${pair.second.orderItems.size}")
-        if (pair.first == pair.second.orderItems.size) {
-            pair.second.cookingTime = System.currentTimeMillis() - pair.second.orderProcessTime
-            sendOrder(pair.second)
-            logger.debug(
-                "Order ${pair.second.id} DONE AND SENT TO DINING HALL! Cooking time " +
-                        "${pair.second.cookingTime}"
-            )
-
+        try {
+            unfinishedOrders.computeIfPresent(item.orderId) { _, pair -> Pair(pair.first + 1, pair.second) }
+            val pair = unfinishedOrders.getValue(item.orderId)
+            logger.debug("Order ${pair.second.id} ${pair.first} / ${pair.second.orderItems.size}")
+            if (pair.first == pair.second.orderItems.size) {
+                pair.second.cookingTime = System.currentTimeMillis() - pair.second.orderProcessTime
+                sendOrder(pair.second)
+                logger.debug(
+                    "Order ${pair.second.id} DONE AND SENT TO DINING HALL! Cooking time " +
+                            "${pair.second.cookingTime}"
+                )
+                unfinishedOrders.remove(item.orderId)
+            }
+        } catch (e: Exception) {
+            logger.debug { e }
         }
     }
 }

@@ -34,13 +34,23 @@ val menuJson: String =
     File("config/menu.json").inputStream().readBytes().toString(Charsets.UTF_8)
 val cooks = Json.decodeFromString(ListSerializer(Cook.serializer()), cooksJson)
 val menu = Json { coerceInputValues = true }.decodeFromString(ListSerializer(Food.serializer()), menuJson)
+
+
+val sumProeficieny = getSumProeficiency()
+
 val compareByPriority = compareByDescending<DetailedOrder> { it.priority }
-var queue: BlockingQueue<DetailedOrder> = PriorityBlockingQueue(50, compareByPriority)
+var queue: BlockingQueue<DetailedOrder> = PriorityBlockingQueue(15, compareByPriority)
 var unfinishedOrders = ConcurrentHashMap<Int, Pair<Int, DetailedOrder>>()
-val complexity1Channel = Channel<OrderItem>()
-val complexity2Channel = Channel<OrderItem>()
-val complexity3Channel = Channel<OrderItem>()
+val complexity1Channel = Channel<OrderItem>(Channel.UNLIMITED)
+val complexity2Channel = Channel<OrderItem>(Channel.UNLIMITED)
+val complexity3Channel = Channel<OrderItem>(Channel.UNLIMITED)
 val channelList = listOf(complexity1Channel, complexity2Channel, complexity3Channel)
 val distribChannel = Channel<OrderItem>()
 val ovenChannel = Channel<OrderItem>(Channel.UNLIMITED)
 val stoveChannel = Channel<OrderItem>(Channel.UNLIMITED)
+
+fun getSumProeficiency(): Int {
+    var p = 0
+    for (cook in cooks) p += cook.proficiency
+    return p
+}

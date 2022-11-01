@@ -79,7 +79,7 @@ class Cook(
                 if (item.timePasssed < time) {
                     delay(cfg.sharingUnit)
                     item.timePasssed += cfg.sharingUnit
-                    //logger.debug("$name $id>> ITEM ${item.foodId} from ORDER ${item.orderId} COOK ${item.cookId} ${item.timePasssed} / ${cookingTime}, SWITCHING!!!")
+                    //logger.debug("$name $id>> ITEM ${item.foodId} from ORDER ${item.orderId} COOK ${item.cookId} ${item.timePasssed} / ${time}, SWITCHING!!!")
                     when (menu[item.foodId - 1].complexity) {
                         1 -> complexity1Channel.send(item)
                         2 -> complexity2Channel.send(item)
@@ -88,16 +88,8 @@ class Cook(
                 } else {
                     com.madalv.distribChannel.send(item)
                 }
-                //logger.debug { "COOK $id is cooking ITEM ${item.foodId} from ORDER ${item.orderId} TIME $time, CMLPX: ${menu[item.foodId - 1].complexity}" }
-//                delay(time)
-//                logger.debug { "COOK $id finished ITEM ${item.foodId} from ORDER ${item.orderId}" }
-//                distribChannel.send(item)
             }
         }
-
-//        delay(time)
-//        logger.debug { "COOK $id finished ITEM ${item.foodId} from ORDER ${item.orderId}" }
-//        distribChannel.send(item)
     }
 
 }

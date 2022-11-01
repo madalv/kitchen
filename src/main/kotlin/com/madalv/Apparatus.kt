@@ -20,11 +20,6 @@ class Apparatus(
     private suspend fun cookItem(item: OrderItem) {
         val cookingTime = menu[item.foodId - 1].preparationTime * cfg.timeUnit
 
-//        if (cookingTime <= 20 * cfg.timeUnit) {
-//            delay(cookingTime)
-//            distribChannel.send(item)
-//        } else
-
         if (item.timePasssed < cookingTime) {
             delay(cfg.sharingUnit)
             item.timePasssed += cfg.sharingUnit

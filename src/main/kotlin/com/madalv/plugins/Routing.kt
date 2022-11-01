@@ -16,6 +16,8 @@ fun Application.configureRouting() {
         }
         post("/order") {
             launch {
+                call.respond(OrderResponse(sumProeficieny, queue.size + 1 + unfinishedOrders.size, cfg.nrOvens + cfg.nrStoves))
+                println("${queue.size} ${unfinishedOrders.size}")
                 val order: Order = call.receive()
                 val orderItems = mutableListOf<OrderItem>()
                 for (itemId in order.items) {
