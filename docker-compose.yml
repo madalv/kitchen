@@ -23,6 +23,18 @@ services:
       - "8084:8084"
     networks:
       - restaurant
+  kitchen3:
+    image: kitchen-img
+    hostname: kitchen3
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - "/home/madalv/Univer/pr/kitchen/config3:/app/config"
+    ports:
+      - "8086:8086"
+    networks:
+      - restaurant
 networks:
   restaurant:
     name: restaurant
